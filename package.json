@@ -1,0 +1,138 @@
+{
+  "name": "whatsapp-llm-assistant",
+  "version": "1.0.0",
+  "description": "WhatsApp client with LLM-powered auto-replies for Mac, Windows, and Linux",
+  "main": "dist/main/index.js",
+  "scripts": {
+    "start": "npx electron .",
+    "dev": "concurrently \"npm run build:watch\" \"npx electron .\"",
+    "build": "tsc && mkdir -p dist/renderer && cp src/renderer/index.html dist/renderer/",
+    "build:watch": "tsc -w & (mkdir -p dist/renderer && cp src/renderer/index.html dist/renderer/ && nodemon --watch src/renderer/*.html --exec 'cp src/renderer/index.html dist/renderer/')",
+    "lint": "eslint src --ext .ts,.tsx",
+    "package:all": "npm run build && npm run package:win && npm run package:mac && npm run package:linux",
+    "package:win": "electron-builder --win",
+    "package:mac": "electron-builder --mac",
+    "package:mac-arm": "electron-builder --mac --arm64",
+    "package:linux": "electron-builder --linux",
+    "package:release": "npm run clean && npm run build && electron-builder --publish never",
+    "clean": "rm -rf dist release",
+    "release": "npm run build && electron-builder --publish always",
+    "postinstall-disabled": "electron-builder install-app-deps"
+  },
+  "author": "IonGPT",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.17.24",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "concurrently": "^8.2.2",
+    "electron": "^28.3.3",
+    "electron-builder": "^24.9.1",
+    "eslint": "^8.56.0",
+    "nodemon": "^3.0.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.15.3",
+    "@mui/material": "^5.15.3",
+    "axios": "^1.6.5",
+    "dotenv": "^17.3.1",
+    "electron-store": "^8.1.0",
+    "electron-updater": "^6.1.7",
+    "fs-extra": "^11.3.0",
+    "html-to-text": "^9.0.5",
+    "imap-simple": "^5.1.0",
+    "mailparser": "^3.9.4",
+    "openai": "^4.104.0",
+    "puppeteer": "^24.4.0",
+    "qrcode": "^1.5.4",
+    "qrcode.react": "^3.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "whatsapp-web.js": "^1.23.0"
+  },
+  "build": {
+    "appId": "com.iongpt.whatsapp-llm-assistant",
+    "productName": "WhatsApp LLM Assistant",
+    "directories": {
+      "output": "release",
+      "buildResources": "build/icons"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "node_modules/whatsapp-web.js/**/*",
+      "node_modules/puppeteer-core/**/*",
+      "node_modules/puppeteer/**/*"
+    ],
+    "asar": true,
+    "npmRebuild": true,
+    "buildDependenciesFromSource": true,
+    "nodeGypRebuild": false,
+    "electronDist": "node_modules/electron/dist",
+    "compression": "maximum",
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        "default"
+      ],
+      "icon": "build/icons/icon.png",
+      "darkModeSupport": true,
+      "hardenedRuntime": true,
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ],
+      "window": {
+        "width": 540,
+        "height": 380
+      }
+    },
+    "win": {
+      "target": [
+        "portable",
+        "nsis"
+      ],
+      "icon": "build/icons/icon.png",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": true
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-Portable.exe"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Utility",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "publish": {
+      "provider": "github",
+      "releaseType": "release"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+.env
+node_modules/
+
+.wwebjs_auth/
+.wwebjs_cache/
+
+dist/
+*.log
+
+__pycache__/
